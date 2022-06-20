@@ -140,14 +140,17 @@
       if (blockType == 'fullMap') {
         $('#front, #back, #foot').find('#layer10, #layer9').children().each(function(i, n) {
           $(n).css('visibility', '');
+          $(n).css('fill', 'grey');
         });
       } else if (blockType == 'dermatome') {
         $('#front, #back, #foot').find('#layer10').children().each(function(i, n) {
           $(n).css('visibility', '');
+          $(n).css('fill', 'grey');
         });
       } else if (blockType == 'cutaneous') {
         $('#front, #back, #foot').find('#layer9').children().each(function(i, n) {
           $(n).css('visibility', '');
+          $(n).css('fill', 'grey');
         });
       } else {
         showBlock(nerveBlocks[blockType], 'left', { color: 'grey' });
@@ -218,7 +221,7 @@
       $('#front, #back, #foot').find('#layer10, #layer9').show().children().each(function(i, n) {
         $(n).css('visibility', '');
         $(n).css('fill', 'grey');
-      })
+      });
 
       refresh();
 

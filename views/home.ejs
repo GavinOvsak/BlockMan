@@ -74,7 +74,7 @@
     };
 
     var nerveBlocks = {
-      'interscalene': [ 'f_C4lat', 'f_C5', 'f_C6', 'b_C4', 'b_C5', 'b_C6', 'p_L5' ],
+      'interscalene': [ 'f_C4lat', 'f_C5', 'f_C6', 'b_C4', 'b_C5', 'b_C6' ],
       'supraclavicular': [ 'f_C5', 'f_C6', 'f_C7', 'b_C5', 'b_C6', 'b_C7' ],
       'infraclavicular': [ 'f_C7', 'f_C8', 'b_C7', 'b_C8' ],
       'axillary': [ 'f_C6', 'f_C7', 'f_C8', 'b_C6', 'b_C7', 'b_C8' ]
@@ -99,7 +99,7 @@
       var fill = opts.color == null ? 'green' : opts.color;
 
       list.map(function(name) {
-        var hash = namedSections[name];
+        var hash = namedSections[name] != null ? namedSections[name] : name;
         var group = hash.split(',')[0];
         var id = hash.split(',')[1];
         var el = $('#' + group).find('#' + id);
@@ -112,11 +112,11 @@
         }
 
         if (originalSide == side || originalSide == 'none') {
-          el.show().css('fill', fill);
+          el.css('visibility', '').css('fill', fill);
         } else {
           var flipped = $(el[0].outerHTML);
           flipped.attr('id', 'flip_' + id);
-          flipped.show().css('fill', fill);
+          flipped.css('visibility', '').css('fill', fill);
 
           var newParent = $('<g class="flip">'); //  transform="scale (-1, 1)" transform-origin="800px, 0px"
           newParent.append(flipped);
@@ -134,20 +134,20 @@
       $('.flip').remove();
 
       $('#front, #back, #foot').find('#layer10, #layer9').children().each(function(i, n) {
-        $(n).hide();
+        $(n).css('visibility', 'hidden');
       });
 
       if (blockType == 'fullMap') {
         $('#front, #back, #foot').find('#layer10, #layer9').children().each(function(i, n) {
-          $(n).show();
+          $(n).css('visibility', '');
         });
       } else if (blockType == 'dermatome') {
         $('#front, #back, #foot').find('#layer10').children().each(function(i, n) {
-          $(n).show();
+          $(n).css('visibility', '');
         });
       } else if (blockType == 'cutaneous') {
         $('#front, #back, #foot').find('#layer9').children().each(function(i, n) {
-          $(n).show();
+          $(n).css('visibility', '');
         });
       } else {
         showBlock(nerveBlocks[blockType], 'left', { color: 'grey' });
@@ -155,14 +155,68 @@
         // showBlock(['p_S1'], 'left', { color: 'grey' });
       }
 
-      $('#front').html($('#front').html())
-      $('#back').html($('#back').html())
-      $('#foot').html($('#foot').html())
+      $('#front').html($('#front').html());
+      $('#back').html($('#back').html());
+      $('#foot').html($('#foot').html());
+
+      // Reverse lookup / paint
+      ['front', 'back', 'foot'].map(function(group) {
+        $('#'+group+' > svg').on('mousedown', function(e) {
+          var svg = this;
+
+          var mainPt = svg.createSVGPoint();
+          mainPt.x = e.clientX;
+          mainPt.y = e.clientY;
+
+          var xFrameShift = e.clientX - e.offsetX;
+          var middle = $(svg).width()/2;
+
+          var flipPt = null;
+          if (flip[group] != null) {
+            flipPt = svg.createSVGPoint();
+            
+            flipPt.x = middle - (e.offsetX - middle) + xFrameShift;
+            flipPt.y = e.clientY;
+          }
+
+          var side = 'none';
+          if (group == 'front') side = e.offsetX > middle ? 'right' : 'left';
+          else if (group == 'back') side = e.offsetX > middle ? 'right' : 'left';
+
+          var contains = {};
+          $(svg).find('path').each(function(i, path) {
+
+            var parentEl = $(path).closest('g');
+            if (parentEl.hasClass('flip')) return;
+
+            var checkPt = function(pt) {
+              var newPt = pt.matrixTransform(path.getScreenCTM().inverse());
+              var inside = path.isPointInFill(newPt);
+              var parent = parentEl.attr('id');
+              var id = $(path).attr('id');
+              if (inside && ['layer9', 'layer10'].indexOf(parent) >= 0) {
+                var reverseName = '';
+                for (var name in namedSections) if (namedSections[name] == group + ',' + id) reverseName = name;
+                // console.log(reverseName != '' ? reverseName : id);
+                contains[reverseName != '' ? reverseName : group + ',' + id] = side;
+              }
+            }
+
+            checkPt(mainPt);
+            if (flipPt != null) checkPt(flipPt);
+          });
+
+          console.log('all contains', contains)
+          for (var name in contains) {
+            showBlock([name], contains[name]);
+          }
+        });
+      });
     };
 
     $(function() {
       $('#front, #back, #foot').find('#layer10, #layer9').show().children().each(function(i, n) {
-        $(n).hide();
+        $(n).css('visibility', '');
         $(n).css('fill', 'grey');
       })
 

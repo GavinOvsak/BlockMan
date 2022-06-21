@@ -138,6 +138,8 @@
       refreshEvents();
     };
 
+    var alreadyShown = {};
+
     var refreshEvents = function() {
       // Reverse lookup / paint
       ['front', 'back', 'foot'].map(function(group) {
@@ -189,7 +191,10 @@
 
           console.log('all contains', contains);
           for (var name in contains) {
+            if (!!alreadyShown[name + ':' + contains[name]]) continue;
+            alreadyShown[name + ':' + contains[name]] = true;
             showBlock([name], contains[name]);
+            break;
           }
 
           reloadSVG();
@@ -199,6 +204,7 @@
 
     var refresh = function() {
       $('.flip').remove();
+      alreadyShown = {};
 
       $('#front, #back, #foot').find('#layer10, #layer9').children().each(function(i, n) {
         $(n).css('visibility', 'hidden');

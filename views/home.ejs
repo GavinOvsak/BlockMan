@@ -131,38 +131,14 @@
 
     var blockType = 'interscalene';
 
-    var refresh = function() {
-      $('.flip').remove();
-
-      $('#front, #back, #foot').find('#layer10, #layer9').children().each(function(i, n) {
-        $(n).css('visibility', 'hidden');
-      });
-
-      if (blockType == 'fullMap') {
-        $('#front, #back, #foot').find('#layer10, #layer9').children().each(function(i, n) {
-          $(n).css('visibility', '');
-          $(n).css('fill', 'grey');
-        });
-      } else if (blockType == 'dermatome') {
-        $('#front, #back, #foot').find('#layer10').children().each(function(i, n) {
-          $(n).css('visibility', '');
-          $(n).css('fill', 'grey');
-        });
-      } else if (blockType == 'cutaneous') {
-        $('#front, #back, #foot').find('#layer9').children().each(function(i, n) {
-          $(n).css('visibility', '');
-          $(n).css('fill', 'grey');
-        });
-      } else {
-        showBlock(nerveBlocks[blockType], 'left', { color: 'grey' });
-        showBlock(nerveBlocks[blockType], 'right', { color: 'grey' });
-        // showBlock(['p_S1'], 'left', { color: 'grey' });
-      }
-
+    var reloadSVG = function() {
       $('#front').html($('#front').html());
       $('#back').html($('#back').html());
       $('#foot').html($('#foot').html());
+      refreshEvents();
+    };
 
+    var refreshEvents = function() {
       // Reverse lookup / paint
       ['front', 'back', 'foot'].map(function(group) {
         $('#'+group+' > svg').on('mousedown', function(e) {
@@ -178,10 +154,11 @@
           var flipPt = null;
           if (flip[group] != null) {
             flipPt = svg.createSVGPoint();
-            
             flipPt.x = middle - (e.offsetX - middle) + xFrameShift;
             flipPt.y = e.clientY;
           }
+
+          console.log(mainPt, flipPt)
 
           var side = 'none';
           if (group == 'front') side = e.offsetX > middle ? 'right' : 'left';
@@ -210,12 +187,48 @@
             if (flipPt != null) checkPt(flipPt);
           });
 
-          console.log('all contains', contains)
+          console.log('all contains', contains);
           for (var name in contains) {
             showBlock([name], contains[name]);
           }
+
+          reloadSVG();
         });
       });
+    }
+
+    var refresh = function() {
+      $('.flip').remove();
+
+      $('#front, #back, #foot').find('#layer10, #layer9').children().each(function(i, n) {
+        $(n).css('visibility', 'hidden');
+      });
+
+      if (blockType == 'fullMap') {
+        $('#front, #back, #foot').find('#layer10, #layer9').children().each(function(i, n) {
+          $(n).css('visibility', '');
+          $(n).css('fill', 'grey');
+        });
+      } else if (blockType == 'dermatome') {
+        $('#front, #back, #foot').find('#layer10').children().each(function(i, n) {
+          $(n).css('visibility', '');
+          $(n).css('fill', 'grey');
+        });
+      } else if (blockType == 'cutaneous') {
+        $('#front, #back, #foot').find('#layer9').children().each(function(i, n) {
+          $(n).css('visibility', '');
+          $(n).css('fill', 'grey');
+        });
+      } else {
+        showBlock(nerveBlocks[blockType], 'left', { color: 'grey' });
+        showBlock(nerveBlocks[blockType], 'right', { color: 'grey' });
+      }
+
+
+      // showBlock(['back,path15628'], 'left');
+      // showBlock(['back,path15628'], 'right', { color: 'grey' });
+
+      reloadSVG();
     };
 
     $(function() {

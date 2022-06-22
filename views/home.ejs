@@ -17,6 +17,20 @@
   <link rel="stylesheet" href="/res/css/bootstrap.min.css"/>
   <link rel="stylesheet" href="/res/css/awesomplete.css">
   <!-- <link rel="stylesheet" href="/res/css/font-awesome.css"> -->
+  <style>
+    .mapSpot {
+      border: black solid 1px;
+      background-color: lightgray;
+      position: absolute;
+    }
+    .mapSpot:hover {
+      border: #055da0 solid 2px;
+    }
+    .mapSpot.active {
+      border: #055da0 solid 2px;
+      background-color: #055da0;
+    }
+  </style>
 </head>
 <body style="user-select: none;">
   <div id="topBar" style="width: 100%; display: inline-block;">
@@ -24,15 +38,6 @@
       <h3 style="display: inline-block;line-height: 35px;position: relative;top: -4px;vertical-align: top;margin-top: 3px;margin-bottom: 0px;margin-right: 10px;" aria-haspopup="true" aria-expanded="true">
         <span id="mainTitle" style="vertical-align: text-top;"><a href="/" style="color: white; text-decoration: none;">Regional Anesthesia Guide</a></span>
       </h3>
-      <!-- <select id="selectBlock" class="form-control" style="display: inline-block; width: auto;">
-        <option value="interscalene">Interscalene</option>
-        <option value="supraclavicular">Supraclavicular</option>
-        <option value="infraclavicular">Infraclavicular</option>
-        <option value="axillary">Axillary</option>
-        <option value="fullMap">Full Map</option>
-        <option value="dermatome">Dermatomes</option>
-        <option value="cutaneous">Cutaneous</option>
-      </select> -->
       <span id="loadingTitle" style="margin-left: 10px; position: relative; top: -3px; display: none;"> Loading.. </span>
     </span>
   </div>
@@ -60,14 +65,26 @@
           </div>
         </div>
         <div style="overflow-y: scroll;height: calc(100% - 34px);">
-          <div id="mapSection" style="display: none;">
+          <div id="mapSection">
             <div>
               <h5 style="margin-top: 10px;margin-left: 10px;display: inline-block;margin-right: 5px;vertical-align: top;">Map</h5>
               <select class="form-control" style="width: calc(100% - 70px);display: inline-block;margin: 5px;">
                 <option>Brachial Plexus</option>
               </select>
             </div>
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Brachial_plexus_2.svg/1920px-Brachial_plexus_2.svg.png" style="width: calc(100% - 20px);border: black 1px solid;border-radius: 10px;margin-top: 5px;margin-left: 10px;margin-right: 10px;margin-bottom: 5px;">
+            <h5 id="mapTitle" style="padding-left: 10px;padding-right: 10px;text-align: center;padding-top: 10px;">Click or hover over a spot to block</h5>
+            <div style="position: relative;width: calc(100% - 20px);margin-left: 10px;">
+              <div>
+                <div class="mapSpot" data-block="isb" style="width: 1.5%;height: 37%;border-radius: 4px;left: 68%;top: 20%;transform: rotate(348deg);"></div>
+                <div class="mapSpot" data-block="supraclavicular" style="width: 1.5%;height: 37%;border-radius: 4px;left: 58%;top: 26%;transform: rotate(337deg);"></div>
+                <div class="mapSpot" data-block="infraclavicular" style="width: 1.5%;height: 33%;border-radius: 4px;left: 50%;top: 36%;transform: rotate(326deg);"></div>
+                <div class="mapSpot" data-block="axillary" style="width: 3%;height: 4%;border-radius: 4px;left: 38%;top: 59%;"></div>
+                <div class="mapSpot" data-block="radial" style="width: 3%;height: 4%;border-radius: 4px;left: 39%;top: 64%;"></div>
+                <div class="mapSpot" data-block="ulnar" style="width: 3%;height: 4%;border-radius: 4px;left: 31%;top: 79%;"></div>
+                <div class="mapSpot" data-block="median" style="width: 3%;height: 4%;border-radius: 4px;left: 26%;top: 76%;"></div>
+              </div>
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Brachial_plexus_2.svg/1920px-Brachial_plexus_2.svg.png" style="width: calc(100% - 20px);border: black 1px solid;border-radius: 10px;margin-top: 5px;margin-left: 10px;margin-right: 10px;margin-bottom: 5px;">
+            </div>
           </div>
           <div id="locationSection" style="display: none;">
             <p style="margin-top: 5px; text-align: center; margin-left: 10px; margin-right: 10px;">Click on the body to see block options</p>
@@ -96,9 +113,9 @@
           <i id="expandBody" data-toggle="tooltip" title="Expand" data-placement="bottom" class="fa-solid fa-up-right-and-down-left-from-center" style="display: inline-block; font-size: 20px; padding: 5px; cursor: pointer;"></i>
         </div>
         <div style="border-left: 1px black solid;position: absolute;top: 0px;right: 0px;width: 45px;border-bottom-left-radius: 10px;border-bottom: 1px black solid;">
-          <i id="skinBody" data-toggle="tooltip" title="Skin Layer" data-placement="left" class="fa-solid fa-face-meh" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;border-bottom: 1px solid black;color: #0a5da2;"></i>
-          <i id="boneBody" data-toggle="tooltip" title="Bone Layer" data-placement="left" class="fa-solid fa-bone" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;border-bottom: 1px solid black;"></i>
-          <i id="muscleBody" data-toggle="tooltip" title="Muscle Layer" data-placement="left" class="fa-solid fa-dumbbell" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;"></i>
+          <i id="skinBody" data-toggle="tooltip" title="" data-placement="left" class="fa-solid fa-face-meh" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;border-bottom: 1px solid black;color: #0a5da2;width: 44px;" data-original-title="Skin Layer"></i>
+          <i id="boneBody" data-toggle="tooltip" title="" data-placement="left" class="fa-solid fa-bone" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;border-bottom: 1px solid black;width: 44px;" data-original-title="Bone Layer"></i>
+          <i id="muscleBody" data-toggle="tooltip" title="" data-placement="left" class="fa-solid fa-dumbbell" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;width: 44px;" data-original-title="Muscle Layer"></i>
         </div>
         <!-- <i class="fa-solid fa-circle-dot" style="position: absolute; left: 65%; top: 20%; color: black;"></i> -->
         <div id="front" style="display: inline-block; width: 100%; height: 100%;">
@@ -112,10 +129,23 @@
   </div>
   <script>
 
-    var pane = 'body'; // body, notes, list
+    var state = {
+      pane: 'body',
+      bodySide: 'front',
+      listType: 'custom'
+    }
+    if (localStorage.getItem('state') != null) state = JSON.parse(localStorage.getItem('state'));
+    var saveState = function() {
+      localStorage.setItem('state', JSON.stringify(state));
+    };
+
+    // var pane = 'body'; // body, notes, list
     var panes = 'three';
-    var bodySide = 'front'; // front, back
-    var listType = 'custom'; // surgery, location, custom, map
+    // var bodySide = 'front'; // front, back
+    // var listType = 'custom'; // surgery, location, custom, map
+
+    var mapClickBlock = null;
+    var mapHoverBlock = null;
 
     var selected = 0;
     var dataList = [{
@@ -133,6 +163,20 @@
       'f_T1': 'front,path14848',
       'f_T2': 'front,path14653',
 
+      'f_Med': 'front,path2395',
+      'f_Msk': 'front,path2900',
+      'f_TriGA': 'front,path13562',
+      'f_TriOpth': 'front,path13523',
+      'f_TriMax': 'front,path13484',
+      'f_TriMand': 'front,path13445',
+      'f_CPsuper': 'front,path13406',
+      'f_Ax': 'front,path13367',
+      'f_Icb': 'front,path13328',
+      'f_RadPost': 'front,path13289',
+      'f_RadSup': 'front,path13211',
+      'f_LatCut': 'front,path13133',
+      'f_Saph': 'front,path13094',
+
       'b_C4': 'back,path15160',
       'b_C5': 'back,path15316',
       'b_C6': 'back,path15745',
@@ -141,6 +185,7 @@
       'b_T1': 'back,path15706',
       'b_T2': 'back,path15355',
       'b_T3': 'back,path15394'
+
 
     };
 
@@ -166,7 +211,22 @@
         coverage: [ 'f_C6', 'f_C7', 'f_C8', 'b_C6', 'b_C7', 'b_C8' ]
       },
       'scp': {
-        name: 'Superficial Cervical Plexus (SCP)',
+        name: 'Superficial Cervical Plexus Block (SCP)',
+        notes: '',
+        coverage: [ 'f_C6', 'f_C7', 'f_C8', 'b_C6', 'b_C7', 'b_C8' ]
+      },
+      'radial': {
+        name: 'Radial Block',
+        notes: '',
+        coverage: [ 'f_C6', 'f_C7', 'f_C8', 'b_C6', 'b_C7', 'b_C8' ]
+      },
+      'ulnar': {
+        name: 'Ulnar Block',
+        notes: '',
+        coverage: [ 'f_C6', 'f_C7', 'f_C8', 'b_C6', 'b_C7', 'b_C8' ]
+      },
+      'median': {
+        name: 'Median Block',
         notes: '',
         coverage: [ 'f_C6', 'f_C7', 'f_C8', 'b_C6', 'b_C7', 'b_C8' ]
       }
@@ -322,38 +382,40 @@
         'location': 'Blocks by Location',
         'custom': 'Block Combinations',
         'map': 'Blocks from Nerve Maps'
-      })[listType]);
+      })[state.listType]);
       $('.listOption').removeClass('active').unbind('click').click(function() {
-        listType = getProp(this, 'type');
+        state.listType = getProp(this, 'type');
         dataList = [];
+        saveState();
         refresh();
       });
-      $('.listOption[data-type="'+listType+'"]').addClass('active');
-      $('#surgerySection').toggle(listType == 'surgery');
-      $('#mapSection').toggle(listType == 'map');
-      $('#customBlockSection').toggle(listType == 'custom');
-      $('#locationSection').toggle(listType == 'location');
+      $('.listOption[data-type="'+state.listType+'"]').addClass('active');
+      $('#surgerySection').toggle(state.listType == 'surgery');
+      $('#mapSection').toggle(state.listType == 'map');
+      $('#customBlockSection').toggle(state.listType == 'custom');
+      $('#locationSection').toggle(state.listType == 'location');
 
-      $('#back').toggle(bodySide == 'back');
-      $('#front').toggle(bodySide == 'front');
+      $('#back').toggle(state.bodySide == 'back');
+      $('#front').toggle(state.bodySide == 'front');
       $('#flipBody').unbind('click').click(function() {
-        bodySide = bodySide == 'back' ? 'front' : 'back';
+        state.bodySide = state.bodySide == 'back' ? 'front' : 'back';
+        saveState();
         refresh();
       });
 
       $('.mobileTab').removeClass('btn-secondary').addClass('btn-light').unbind('click').click(function() {
-        pane = getProp(this, 'type');
+        state.pane = getProp(this, 'type');
+        saveState();
         refresh();
         updateLayout();
       });
-      $('.mobileTab[data-type="'+pane+'"]').addClass('btn-secondary').removeClass('btn-light')
+      $('.mobileTab[data-type="'+state.pane+'"]').addClass('btn-secondary').removeClass('btn-light')
 
       $('#front, #back').find('#layer10, #layer9').children().each(function(i, n) {
         $(n).css('visibility', 'hidden');
       });
 
-      $('#dataList').toggle(listType != 'map');
-      // if (dataList[selected] == null) selected = 0;
+      $('#dataList').toggle(state.listType != 'map');
       $('#dataList').empty();
       dataList.map(function(item, i) {
         var isSelected = i == selected;
@@ -401,7 +463,8 @@
         e.stopPropagation();
         var index = parseInt(getProp(this, 'index'));
         selected = index;
-        pane = 'notes';
+        state.pane = 'notes';
+        saveState();
         updateLayout();
         refresh();
       });
@@ -410,20 +473,35 @@
         e.stopPropagation();
         var index = parseInt(getProp(this, 'index'));
         selected = index;
-        pane = 'body';
+        state.pane = 'body';
+        saveState();
         updateLayout();
         refresh();
       });
 
+      var item = null;
+      if (state.listType == 'map') {
+        var focusId = mapHoverBlock || mapClickBlock;
+        $('#mapTitle').text('Click or hover over a spot to block');
+        if (focusId != null) {
+          item = { type: 'block', names: [focusId] };
+          var data = blocks[focusId];
+          if (data != null) $('#mapTitle').text(data.name);
+        }
+      } else if (dataList[selected] != null) item = dataList[selected];
+
+      $('.mapSpot').removeClass('active');
+      $('.mapSpot[data-block="'+mapClickBlock+'"]').addClass('active');
+
       var notes = '<h6>Pick a block or surgery to see notes related to it.</h6>';
-      if (dataList[selected] != null) {
-        var item = dataList[selected];
+      if (item != null) {
         if (item.type == 'surgery') {
           var data = surgeries[item.name];
           notes = '<h5>'+data.name+'</h5><p>'+data.notes+'</p>';
         } else if (item.type == 'block') {
           notes = item.names.map(function(blockName) {
             var data = blocks[blockName];
+            if (data == null) return '';
             return '<h5>'+data.name+'</h5><p>'+((data.notes || '').trim().length == 0 ? 'No notes yet' : data.notes)+'</p>';
           }).join('');
         }
@@ -440,7 +518,7 @@
           item.names.map(function(blockName) {
             selectedBlocks[blockName] = true;
           })
-        } else if (listType == 'custom') {
+        } else if (state.listType == 'custom') {
           item.names.map(function(blockName) {
             backgroundBlocks[blockName] = true;
           });
@@ -452,13 +530,27 @@
         $(n).css('fill', 'grey');
       });
 
-      for (var blockName in backgroundBlocks) {
-        showBlock(blocks[blockName].coverage, 'left', { color: 'grey' });
-        showBlock(blocks[blockName].coverage, 'right', { color: 'grey' });
-      }
-      for (var blockName in selectedBlocks) {
-        showBlock(blocks[blockName].coverage, 'left', { color: '#055da0' });
-        showBlock(blocks[blockName].coverage, 'right', { color: '#055da0' });
+      if (state.listType == 'map') {
+        if (mapClickBlock != null && mapHoverBlock != null && mapClickBlock != mapHoverBlock && blocks[mapClickBlock] != null) {
+          showBlock(blocks[mapClickBlock].coverage, 'left', { color: 'grey' });
+          showBlock(blocks[mapClickBlock].coverage, 'right', { color: 'grey' });
+        }
+
+        var focusId = mapHoverBlock || mapClickBlock;
+        var focusData = blocks[focusId];
+        if (focusData != null) {
+          showBlock(data.coverage, 'left', { color: '#055da0' });
+          showBlock(data.coverage, 'right', { color: '#055da0' });
+        }
+      } else {
+        for (var blockName in backgroundBlocks) {
+          showBlock(blocks[blockName].coverage, 'left', { color: 'grey' });
+          showBlock(blocks[blockName].coverage, 'right', { color: 'grey' });
+        }
+        for (var blockName in selectedBlocks) {
+          showBlock(blocks[blockName].coverage, 'left', { color: '#055da0' });
+          showBlock(blocks[blockName].coverage, 'right', { color: '#055da0' });
+        }
       }
 
       // $('#front, #back').find('#layer10, #layer9').children().each(function(i, n) {
@@ -502,10 +594,10 @@
         $('#listCol, #notesCol, #bodyCol').css('width', '100%');
         $('#listCol, #notesCol').css('height', '100%')
         $('#bodyCol').css('height', 'calc(100% - 60px)')
-        $('#leftSide').css('width', '100%').css('height', 'calc(100% - 70px)').toggle(pane != 'body');
-        $('#listCol').toggle(pane == 'list');
-        $('#notesCol').toggle(pane == 'notes');
-        $('#bodyCol').toggle(pane == 'body');
+        $('#leftSide').css('width', '100%').css('height', 'calc(100% - 70px)').toggle(state.pane != 'body');
+        $('#listCol').toggle(state.pane == 'list');
+        $('#notesCol').toggle(state.pane == 'notes');
+        $('#bodyCol').toggle(state.pane == 'body');
       }
       $('#blockNotes').css('height', panes == 'one' ? '100%' : 'calc(100% - 44px)')
       $('#bodyMain').css('height', panes == 'one' ? '100%' : 'calc(100% - 55px)')
@@ -540,6 +632,21 @@
         })) dataList.push(item);
       }
 
+      $('.mapSpot').unbind('click').click(function() {
+        var block = getProp(this, 'block');
+        if (mapClickBlock == block) mapClickBlock = null;
+        else mapClickBlock = block;
+        refresh();
+      });
+      $('.mapSpot').mouseenter(function() {
+        var block = getProp(this, 'block');
+        mapHoverBlock = block;
+        refresh();
+      }).mouseleave(function() {
+        mapHoverBlock = null;
+        refresh();
+      });
+
       surgerySearchBox = new Awesomplete($('#surgerySearch')[0], {
         list: [], minChars: 0, autoFirst: true, maxItems: 8,
         data: function(item) {
@@ -551,14 +658,15 @@
         var value = data.text.value;
         var data = surgeries[value.name];
         
-        if (selected == null) selected = dataList.length;
-        addToList({  type: 'surgery', name: value.name  });
+        selected = dataList.length;
+        addToList({ type: 'surgery', name: value.name  });
         data.blocks.map(function(blockNames) {
           addToList({
             type: 'block',
             names: blockNames
           });
         });
+        if (selected >= dataList.length) selected = dataList.length - 1;
 
         refresh();
       });
@@ -574,7 +682,9 @@
         var value = data.text.value;
         var data = blocks[value.name];
 
+        selected = dataList.length;
         addToList({ type: 'block', names: [value.name] });
+        if (selected >= dataList.length) selected = dataList.length - 1;
 
         refresh();
       });

@@ -377,6 +377,7 @@
         $(n).css('visibility', 'hidden');
       });
 
+      $('#dataList').toggle(listType != 'map');
       // if (dataList[selected] == null) selected = 0;
       $('#dataList').empty();
       dataList.map(function(item, i) {

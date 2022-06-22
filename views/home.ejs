@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="/res/css/awesomplete.css">
   <!-- <link rel="stylesheet" href="/res/css/font-awesome.css"> -->
 </head>
-<body>
+<body style="user-select: none;">
   <div id="topBar" style="width: 100%; display: inline-block;">
     <span id="titleAndButtons" style="padding-left: 10px;display: inline-block;width: 100%;padding-top: 7px;vertical-align: top;background-color: #055da0;color: white;padding-bottom: 5px;">
       <h3 style="display: inline-block;line-height: 35px;position: relative;top: -4px;vertical-align: top;margin-top: 3px;margin-bottom: 0px;margin-right: 10px;" aria-haspopup="true" aria-expanded="true">
@@ -84,21 +84,21 @@
         <div id="notesTop" style="width: 100%;background-color: lightgrey;padding: 10px;">
           <i class="fa-solid fa-file-lines" style="margin-right: 10px;width: 14px; display: inline-block"></i>Notes
         </div>
-        <div id="blockNotes" style="width: 100%;display: inline-block;padding: 10px;overflow-y: scroll;"></div>
+        <div id="blockNotes" style="user-select: text;width: 100%;display: inline-block;padding: 10px;overflow-y: scroll;height: calc(100% - 44px);"></div>
       </div>
     </div><div id="bodyCol" style="width: 34%; display: none; vertical-align: top;"> 
       <div id="bodyTop" style="width: 100%;background-color: lightgrey;padding: 10px; cursor: pointer;">
         <i class="fa-solid fa-child-reaching" style="margin-right: 10px;width: 14px; display: inline-block"></i>Body Map
       </div>
-      <div style="width: calc(100% - 10px);position: relative;display: inline-block;border: black 1px solid;border-radius: 10px;padding: 5px;height: calc(100% - 55px);margin-top: 5px;margin-left: 5px;">
+      <div id="bodyMain" style="width: calc(100% - 10px);position: relative;display: inline-block;border: black 1px solid;border-radius: 10px;padding: 5px;height: calc(100% - 55px);margin-top: 5px;margin-left: 5px;">
         <div style="position: absolute; top: 5px; left: 5px; width: 100px;">
-          <i id="flipBody" class="fa-solid fa-repeat" style="display: inline-block; font-size: 20px; padding: 5px; cursor: pointer; margin-right: 0px;"></i>
-          <i id="expandBody" class="fa-solid fa-up-right-and-down-left-from-center" style="display: inline-block; font-size: 20px; padding: 5px; cursor: pointer;"></i>
+          <i id="flipBody" data-toggle="tooltip" title="Flip" data-placement="bottom" class="fa-solid fa-repeat" style="display: inline-block; font-size: 20px; padding: 5px; cursor: pointer; margin-right: 0px;"></i>
+          <i id="expandBody" data-toggle="tooltip" title="Expand" data-placement="bottom" class="fa-solid fa-up-right-and-down-left-from-center" style="display: inline-block; font-size: 20px; padding: 5px; cursor: pointer;"></i>
         </div>
         <div style="border-left: 1px black solid;position: absolute;top: 0px;right: 0px;width: 45px;border-bottom-left-radius: 10px;border-bottom: 1px black solid;">
-          <i id="skinBody" class="fa-solid fa-face-meh" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;border-bottom: 1px solid black;color: #0a5da2;"></i>
-          <i id="boneBody" class="fa-solid fa-bone" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;border-bottom: 1px solid black;"></i>
-          <i id="muscleBody" class="fa-solid fa-dumbbell" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;"></i>
+          <i id="skinBody" data-toggle="tooltip" title="Skin Layer" data-placement="left" class="fa-solid fa-face-meh" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;border-bottom: 1px solid black;color: #0a5da2;"></i>
+          <i id="boneBody" data-toggle="tooltip" title="Bone Layer" data-placement="left" class="fa-solid fa-bone" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;border-bottom: 1px solid black;"></i>
+          <i id="muscleBody" data-toggle="tooltip" title="Muscle Layer" data-placement="left" class="fa-solid fa-dumbbell" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;"></i>
         </div>
         <!-- <i class="fa-solid fa-circle-dot" style="position: absolute; left: 65%; top: 20%; color: black;"></i> -->
         <div id="front" style="display: inline-block; width: 100%; height: 100%;">
@@ -311,7 +311,7 @@
 
     var updateLayout = function() {
       var width = $(document).innerWidth();
-      var panes = width > 1100 ? 'three' : width > 550 ? 'two' : 'one';
+      var panes = width > 1100 ? 'three' : width > 615 ? 'two' : 'one';
       $('#mobileTop').toggle(panes == 'one');
       $('#leftSide, #listCol, #notesCol, #bodyCol, #listIcon, #bodyTop, #notesTop').css('display', panes != 'one' ? 'inline-block' : 'none');
       if (panes == 'three') { // Three Pane
@@ -331,7 +331,8 @@
         $('#notesCol').toggle(pane == 'notes');
         $('#bodyCol').toggle(pane == 'body');
       }
-      $('#front').parent().css('height', panes == 'one' ? '100%' : 'calc(100% - 55px)')
+      $('#blockNotes').css('height', panes == 'one' ? '100%' : 'calc(100% - 44px)')
+      $('#bodyMain').css('height', panes == 'one' ? '100%' : 'calc(100% - 55px)')
     };
     $(window).on('resize', function() {
       updateLayout();
@@ -385,14 +386,14 @@
         if (item.type == 'surgery') {
           var data = surgeries[item.name];
           $('#dataList').append($(''+
-`<div class="dataRow" data-type="surgery" data-index="${i}" style="padding: 6px;background-color: #0e5da4;border-radius: 5px;margin: 5px;color: white; cursor: pointer;${isSelected ? 'border: black solid 2px;' : ''}">
+`<div class="dataRow" data-type="surgery" data-index="${i}" style="user-select: text; padding: 6px;background-color: #0e5da4;border-radius: 5px;margin: 5px;color: white; cursor: pointer;${isSelected ? 'border: black solid 2px;' : ''}">
   <i class="fa-solid fa-magnifying-glass" style="float: right; margin-right: 5px; margin-top: 3px;"></i>
   <i class="removeData fa-solid fa-xmark" style="margin-right: 7px; margin-left: 4px;"></i>
   <span>Surgery: ${data.name}</span>
 </div>`));
         } else if (item.type == 'block') {
           $('#dataList').append($(''+
-`<div class="dataRow" data-type="block" data-index="${i}" style="padding: 6px;background-color: lightgrey;border-radius: 5px;margin: 5px;cursor: pointer;${isSelected ? 'border: #125da6 solid 2px;' : ''}">
+`<div class="dataRow" data-type="block" data-index="${i}" style="user-select: text; padding: 6px;background-color: lightgrey;border-radius: 5px;margin: 5px;cursor: pointer;${isSelected ? 'border: #125da6 solid 2px;' : ''}">
   <i class="fa-solid fa-arrow-right" style="float: right; margin-right: 5px; margin-top: 3px;"></i>
   <i class="removeData fa-solid fa-xmark" style="margin-right: 7px; margin-left: 4px;"></i>
   <span>${item.names.map(function(blockName) {
@@ -547,6 +548,8 @@
 
         refresh();
       });
+
+      $('[data-toggle="tooltip"]').tooltip();
 
       $('#surgerySearch, #blockSearch').parent().css('width', 'calc(100% - 10px)');
       $('#surgerySearch, #blockSearch').parent().find('ul').css('margin-left', '5px');

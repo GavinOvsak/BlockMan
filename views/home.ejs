@@ -180,7 +180,7 @@
 
       'b_medAbc': 'back,path10344',
       'b_latAbc': 'back,path10305',
-      'b_ulnar': 'back,path10305',
+      'b_ulnar': 'back,path10266',
       'b_med1': 'back,path10227',
       'b_med2': 'back,path10188',
       'b_med3': 'back,path10149',
@@ -317,7 +317,6 @@
       $('#front>svg').html($('#front>svg').html())
     };
 
-
     var reloadSVG = function() {
       $('#front').html($('#front').html());
       $('#back').html($('#back').html());
@@ -326,9 +325,12 @@
 
     var alreadyShown = {};
 
+    // Draw a circle where clicked
+    var locationPt = null;
+
     var refreshEvents = function() {
       // Reverse lookup / paint
-      ['front', 'back', 'foot'].map(function(group) {
+      ['front', 'back'].map(function(group) {
         $('#'+group+' > svg').on('mousedown', function(e) {
           var svg = this;
 
@@ -354,7 +356,6 @@
 
           var contains = {};
           $(svg).find('path').each(function(i, path) {
-
             var parentEl = $(path).closest('g');
             if (parentEl.hasClass('flip')) return;
 
@@ -375,16 +376,36 @@
             if (flipPt != null) checkPt(flipPt);
           });
 
-          console.log('all contains', contains);
-          for (var name in contains) {
-            if (!!alreadyShown[name + ':' + contains[name]]) continue;
-            alreadyShown[name + ':' + contains[name]] = true;
-            console.log('painting', name);
-            showBlock([name], contains[name]);
-            break;
+          if (state.listType == 'location') {
+            $('.locPt').remove();
+            var actualPt = mainPt.matrixTransform(svg.getScreenCTM().inverse());
+            $('#'+group + '> svg').append($('<circle stroke="black" fill="yellow" class="locPt" cx="'+actualPt.x+'" cy="'+actualPt.y+'" r="3"/>'))
+
+            dataList = [];
+            for (var blockName in blocks) {
+              if (blocks[blockName].coverage.some(function(pathName) {
+                return contains[pathName] != null;
+              })) {
+                dataList.push({
+                  type: 'block',
+                  names: [blockName]
+                });
+              }
+            }
+            if (dataList.length > 0) selected = 0;
           }
 
-          reloadSVG();
+          // console.log('all contains', contains);
+          // for (var name in contains) {
+          //   if (!!alreadyShown[name + ':' + contains[name]]) continue;
+          //   alreadyShown[name + ':' + contains[name]] = true;
+          //   console.log('painting', name);
+          //   showBlock([name], contains[name]);
+          //   break;
+          // }
+
+          refresh();
+          // reloadSVG();
         });
       });
     };
@@ -412,7 +433,9 @@
       $('#surgerySection').toggle(state.listType == 'surgery');
       $('#mapSection').toggle(state.listType == 'map');
       $('#customBlockSection').toggle(state.listType == 'custom');
-      $('#locationSection').toggle(state.listType == 'location');
+      $('#locationSection').toggle(state.listType == 'location' && dataList.length == 0);
+
+      if (state.listType != 'location') $('.locPt').remove();
 
       $('#back').toggle(state.bodySide == 'back');
       $('#front').toggle(state.bodySide == 'front');

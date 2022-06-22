@@ -113,9 +113,9 @@
           <i id="expandBody" data-toggle="tooltip" title="Expand" data-placement="bottom" class="fa-solid fa-up-right-and-down-left-from-center" style="display: inline-block; font-size: 20px; padding: 5px; cursor: pointer;"></i>
         </div>
         <div style="border-left: 1px black solid;position: absolute;top: 0px;right: 0px;width: 45px;border-bottom-left-radius: 10px;border-bottom: 1px black solid;">
-          <i id="skinBody" data-toggle="tooltip" title="" data-placement="left" class="fa-solid fa-face-meh" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;border-bottom: 1px solid black;color: #0a5da2;width: 44px;" data-original-title="Skin Layer"></i>
-          <i id="boneBody" data-toggle="tooltip" title="" data-placement="left" class="fa-solid fa-bone" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;border-bottom: 1px solid black;width: 44px;" data-original-title="Bone Layer"></i>
-          <i id="muscleBody" data-toggle="tooltip" title="" data-placement="left" class="fa-solid fa-dumbbell" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;width: 44px;" data-original-title="Muscle Layer"></i>
+          <i data-toggle="tooltip" title="" data-placement="left" class="skinBody fa-solid fa-face-meh" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;border-bottom: 1px solid black;color: #0a5da2;width: 44px;" data-original-title="Skin Layer"></i>
+          <i data-toggle="tooltip" title="" data-placement="left" class="boneBody fa-solid fa-bone" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;border-bottom: 1px solid black;width: 44px;" data-original-title="Bone Layer"></i>
+          <i data-toggle="tooltip" title="" data-placement="left" class="muscleBody fa-solid fa-dumbbell" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;width: 44px;" data-original-title="Muscle Layer"></i>
         </div>
         <!-- <i class="fa-solid fa-circle-dot" style="position: absolute; left: 65%; top: 20%; color: black;"></i> -->
         <div id="front" style="display: inline-block; width: 100%; height: 100%;">
@@ -137,6 +137,11 @@
         </div>
         <div class="modal-body" style="text-align: center; display: inline-block; padding-top: 15px; width: 100%; overflow-y: scroll; max-height: 624px;">
           <div id="expandedBox">
+            <div style="border-left: 1px black solid;position: absolute;top: 0px;right: 0px;width: 45px;border-bottom-left-radius: 10px;border-bottom: 1px black solid;">
+              <i data-toggle="tooltip" title="" data-placement="left" class="skinBody fa-solid fa-face-meh" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;border-bottom: 1px solid black;color: #0a5da2;width: 44px;" data-original-title="Skin Layer"></i>
+              <i data-toggle="tooltip" title="" data-placement="left" class="boneBody fa-solid fa-bone" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;border-bottom: 1px solid black;width: 44px;" data-original-title="Bone Layer"></i>
+              <i data-toggle="tooltip" title="" data-placement="left" class="muscleBody fa-solid fa-dumbbell" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;width: 44px;" data-original-title="Muscle Layer"></i>
+            </div>
             <div id="fullFront" style="display: inline-block;height: 700px;">
               <%- include ("../res/svg/bodymapFront.svg") %>
             </div>

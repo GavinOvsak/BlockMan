@@ -69,6 +69,9 @@
             </div>
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Brachial_plexus_2.svg/1920px-Brachial_plexus_2.svg.png" style="width: calc(100% - 20px);border: black 1px solid;border-radius: 10px;margin-top: 5px;margin-left: 10px;margin-right: 10px;margin-bottom: 5px;">
           </div>
+          <div id="locationSection" style="display: none;">
+            <p style="margin-top: 5px; text-align: center; margin-left: 10px; margin-right: 10px;">Click on the body to see block options</p>
+          </div>
           <div id="surgerySection" style="display: none;">
             <input id="surgerySearch" class="form-control" placeholder="Surgery Search" style="margin: 5px;display: inline-block;">
           </div>
@@ -354,6 +357,7 @@
       $('#surgerySection').toggle(listType == 'surgery');
       $('#mapSection').toggle(listType == 'map');
       $('#customBlockSection').toggle(listType == 'custom');
+      $('#locationSection').toggle(listType == 'location');
 
       $('#back').toggle(bodySide == 'back');
       $('#front').toggle(bodySide == 'front');

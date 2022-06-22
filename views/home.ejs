@@ -5,7 +5,10 @@
   <script src="/res/js/jquery-ui.js"></script>
   <script src="/res/js/popper.min.js"></script>
   <script src="/res/js/bootstrap.min.js"></script>
+  <script src="/res/js/lodash.min.js"></script>
+  <script src="/res/js/awesomplete.js"></script>
   <script async src="/res/js/lodash.min.js"></script>
+  <script src="/res/js/fontawesome.js"></script>
   <script src="/res/js/utilities.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,15 +16,15 @@
   <link rel="apple-touch-icon" href="favicon.ico">
   <link rel="stylesheet" href="/res/css/bootstrap.min.css"/>
   <link rel="stylesheet" href="/res/css/awesomplete.css">
-  <link rel="stylesheet" href="/res/css/font-awesome.css">
+  <!-- <link rel="stylesheet" href="/res/css/font-awesome.css"> -->
 </head>
 <body>
   <div id="topBar" style="width: 100%; display: inline-block;">
     <span id="titleAndButtons" style="padding-left: 10px;display: inline-block;width: 100%;padding-top: 7px;vertical-align: top;background-color: #055da0;color: white;padding-bottom: 5px;">
       <h3 style="display: inline-block;line-height: 35px;position: relative;top: -4px;vertical-align: top;margin-top: 3px;margin-bottom: 0px;margin-right: 10px;" aria-haspopup="true" aria-expanded="true">
-        <span id="mainTitle" style="vertical-align: text-top;"><a href="/" style="color: white; text-decoration: none;">Block Man: An Interactive Regional Anesthesia Tool</a></span>
+        <span id="mainTitle" style="vertical-align: text-top;"><a href="/" style="color: white; text-decoration: none;">Regional Anesthesia Guide</a></span>
       </h3>
-      <select id="selectBlock" class="form-control" style="display: inline-block; width: auto;">
+      <!-- <select id="selectBlock" class="form-control" style="display: inline-block; width: auto;">
         <option value="interscalene">Interscalene</option>
         <option value="supraclavicular">Supraclavicular</option>
         <option value="infraclavicular">Infraclavicular</option>
@@ -29,26 +32,92 @@
         <option value="fullMap">Full Map</option>
         <option value="dermatome">Dermatomes</option>
         <option value="cutaneous">Cutaneous</option>
-      </select>
+      </select> -->
       <span id="loadingTitle" style="margin-left: 10px; position: relative; top: -3px; display: none;"> Loading.. </span>
     </span>
   </div>
-  <div id="mainBar" class="bg loading" style="float: left;width: 100%;height: calc(100% - 57px); background-color: white; overflow-y: scroll; padding-bottom: 20px;">
-    <div id="col1" class="col-xs-12" style="padding-left: 10px;padding-right: 10px;padding-top: 10px;"> 
-      <div id="front" style="width: 300px; display: inline-block;">
-        <%- include ("../res/svg/bodymapFront.svg") %>
+  <div id="mainBar" class="bg loading" style="float: left;width: 100%;height: calc(100% - 50px);background-color: white;overflow-y: scroll;">
+    <div id="mobileTop" style="width: 100%;background-color: lightgrey;text-align: center;font-size: 21px;">
+      <div class="btn btn-light mobileTab" data-type="list" style="margin-top: 5px;margin-bottom: 5px;float: left;margin-left: 10px;margin-right: 10px;"><i class="fa-solid fa-bars" style="margin-right: 8px;"></i>Blocks</div>
+      <div class="btn btn-light mobileTab" data-type="notes" style="margin-top: 5px;margin-bottom: 5px;margin-left: 10px;margin-right: 10px;"><i class="fa-solid fa-file-lines" style="margin-right: 8px;"></i>Notes</div>
+      <div class="btn btn-light mobileTab" data-type="body" style="margin-top: 5px;margin-bottom: 5px;margin-left: 10px;margin-right: 10px;float: right;"><i class="fa-solid fa-child-reaching" style="margin-right: 8px;"></i>Body</div>
+    </div>
+    <div id="leftSide" style="display: none;width: 50%;">
+      <div id="listCol" style="width: 100%;display: inline-block;vertical-align: top;border-right: black solid 1px;padding-bottom: 10px;height: 50%;"> 
+        <div class="dropdown" style="background-color: lightgrey;">
+          <div class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: calc(100% - 85px);padding: 10px;padding-left: 20px;display: inline-block;cursor: pointer;">
+            <i id="listIcon" class="fa-solid fa-bars" style="margin-right: 10px;width: 14px; display: inline-block;"></i>
+            <span id="listTitle">Blocks by Surgery</span>
+          </div>
+          <div id="clear" class="btn btn-sm btn-light" style="display: inline-block;vertical-align: top;margin-top: 6px;">Clear
+            <i class="fa-solid fa-eraser" style="margin-left: 7px;"></i>
+          </div>
+          <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(5px, 44px, 0px); top: 0px; left: 0px; will-change: transform;">
+            <a class="dropdown-item active listOption" data-type="surgery" href="#">Blocks by Surgery</a>
+            <a class="dropdown-item listOption" data-type="location" href="#">Blocks by Location</a>
+            <a class="dropdown-item listOption" data-type="custom" href="#">Block Combinations</a>
+            <a class="dropdown-item listOption" data-type="map" href="#">Blocks from Nerve Maps</a>
+          </div>
+        </div>
+        <div style="overflow-y: scroll;height: calc(100% - 34px);">
+          <div id="mapSection" style="display: none;">
+            <div>
+              <h5 style="margin-top: 10px;margin-left: 10px;display: inline-block;margin-right: 5px;vertical-align: top;">Map</h5>
+              <select class="form-control" style="width: calc(100% - 70px);display: inline-block;margin: 5px;">
+                <option>Brachial Plexus</option>
+              </select>
+            </div>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Brachial_plexus_2.svg/1920px-Brachial_plexus_2.svg.png" style="width: calc(100% - 20px);border: black 1px solid;border-radius: 10px;margin-top: 5px;margin-left: 10px;margin-right: 10px;margin-bottom: 5px;">
+          </div>
+          <div id="surgerySection" style="display: none;">
+            <input id="surgerySearch" class="form-control" placeholder="Surgery Search" style="margin: 5px;display: inline-block;">
+          </div>
+          <div id="customBlockSection" style="display: none;">
+            <input id="blockSearch" class="form-control" placeholder="Block Search" style="margin: 5px;display: inline-block;">
+          </div>
+          <div id="dataList"></div>
+        </div>
+      </div><div id="notesCol" style="width: 100%;display: inline-block;vertical-align: top;border-right: black solid 1px;height: 50%;"> 
+        <div id="notesTop" style="width: 100%;background-color: lightgrey;padding: 10px;">
+          <i class="fa-solid fa-file-lines" style="margin-right: 10px;width: 14px; display: inline-block"></i>Notes
+        </div>
+        <div id="blockNotes" style="width: 100%;display: inline-block;padding: 10px;overflow-y: scroll;"></div>
       </div>
-      <div id="back" style="width: 300px; display: inline-block;">
-        <%- include ("../res/svg/bodymapBack.svg") %>
+    </div><div id="bodyCol" style="width: 34%; display: none; vertical-align: top;"> 
+      <div id="bodyTop" style="width: 100%;background-color: lightgrey;padding: 10px;">
+        <i class="fa-solid fa-child-reaching" style="margin-right: 10px;width: 14px; display: inline-block"></i>Body Map
       </div>
-      <div id="foot" style="width: 100px; display: inline-block;">
-        <%- include ("../res/svg/bodymapFoot.svg") %>
+      <div style="width: calc(100% - 10px);position: relative;display: inline-block;border: black 1px solid;border-radius: 10px;padding: 5px;height: calc(100% - 55px);margin-top: 5px;margin-left: 5px;">
+        <div style="position: absolute; top: 5px; left: 5px; width: 100px;">
+          <i id="flipBody" class="fa-solid fa-repeat" style="display: inline-block; font-size: 20px; padding: 5px; cursor: pointer; margin-right: 0px;"></i>
+          <i id="expandBody" class="fa-solid fa-up-right-and-down-left-from-center" style="display: inline-block; font-size: 20px; padding: 5px; cursor: pointer;"></i>
+        </div>
+        <div style="border-left: 1px black solid;position: absolute;top: 0px;right: 0px;width: 45px;border-bottom-left-radius: 10px;border-bottom: 1px black solid;">
+          <i id="skinBody" class="fa-solid fa-face-meh" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;border-bottom: 1px solid black;color: #0a5da2;"></i>
+          <i id="boneBody" class="fa-solid fa-bone" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;border-bottom: 1px solid black;"></i>
+          <i id="muscleBody" class="fa-solid fa-dumbbell" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;"></i>
+        </div>
+        <!-- <i class="fa-solid fa-circle-dot" style="position: absolute; left: 65%; top: 20%; color: black;"></i> -->
+        <div id="front" style="display: inline-block; width: 100%; height: 100%;">
+          <%- include ("../res/svg/bodymapFront.svg") %>
+        </div>
+        <div id="back" style="display: none; width: 100%; height: 100%;">
+          <%- include ("../res/svg/bodymapBack2.svg") %>
+        </div>
       </div>
     </div>
   </div>
   <script>
 
-// Try reverse lookup
+    var pane = 'body'; // body, notes, list
+    var bodySide = 'front'; // front, back
+    var listType = 'custom'; // surgery, location, custom, map
+
+    var selected = 0;
+    var dataList = [{
+      type: 'block',
+      names: ['axillary']
+    }];
 
     var namedSections = {
       'f_C4lat': 'front,path2797',
@@ -67,19 +136,54 @@
       'b_C8': 'back,path15977',
       'b_T1': 'back,path15706',
       'b_T2': 'back,path15355',
-      'b_T3': 'back,path15394',
-
-      'p_S1': 'foot,path14068',
-      'p_L5': 'foot,path14107'
+      'b_T3': 'back,path15394'
 
     };
 
-    var nerveBlocks = {
-      'interscalene': [ 'f_C4lat', 'f_C5', 'f_C6', 'b_C4', 'b_C5', 'b_C6' ],
-      'supraclavicular': [ 'f_C5', 'f_C6', 'f_C7', 'b_C5', 'b_C6', 'b_C7' ],
-      'infraclavicular': [ 'f_C7', 'f_C8', 'b_C7', 'b_C8' ],
-      'axillary': [ 'f_C6', 'f_C7', 'f_C8', 'b_C6', 'b_C7', 'b_C8' ]
+    var blocks = {
+      'isb': {
+        name: 'Interscalene Block (ISB)',
+        notes: '',
+        coverage: [ 'f_C4lat', 'f_C5', 'f_C6', 'b_C4', 'b_C5', 'b_C6' ]
+      }, 
+      'supraclavicular': {
+        name: 'Supraclavicular Block',
+        notes: '',
+        coverage: [ 'f_C5', 'f_C6', 'f_C7', 'b_C5', 'b_C6', 'b_C7' ],
+      }, 
+      'infraclavicular': {
+        name: 'Infraclavicular Block',
+        notes: '',
+        coverage: [ 'f_C7', 'f_C8', 'b_C7', 'b_C8' ]
+      }, 
+      'axillary': {
+        name: 'Axillary Block',
+        notes: '',
+        coverage: [ 'f_C6', 'f_C7', 'f_C8', 'b_C6', 'b_C7', 'b_C8' ]
+      },
+      'scp': {
+        name: 'Superficial Cervical Plexus (SCP)',
+        notes: '',
+        coverage: [ 'f_C6', 'f_C7', 'f_C8', 'b_C6', 'b_C7', 'b_C8' ]
+      }
     };
+
+    var surgeries = {
+      's1': {
+        name: 'Clavicle Fracture',
+        notes: '',
+        blocks: [
+          ['scp', 'isb']
+        ]
+      },
+      's2': {
+        name: 'Total or Partial Shoulder',
+        notes: '',
+        blocks: [
+          ['isb']
+        ]
+      },
+    }
 
     var middle = 500;
     var flip = {
@@ -90,9 +194,11 @@
       'front,layer10': 'right', // Front Dermatome
       'front,layer9': 'left', // Front Cutaneous nerves
       'back,layer10': 'right', // Back Dermatome
-      'back,layer9': 'left', // Back Cutaneous nerves
-      'foot,layer10': 'none',
-      'foot,layer9': 'none'
+      'back,layer9': 'left' // Back Cutaneous nerves
+    };
+
+    var getProp = function(that, prop) {
+      return $(that).closest('[data-'+prop+']').attr('data-'+prop);
     };
 
     var showBlock = function(list, side, opts) {
@@ -112,7 +218,7 @@
           return;
         }
 
-        if (originalSide == side || originalSide == 'none') {
+        if (originalSide == side) {
           el.css('visibility', '').css('fill', fill);
         } else {
           var flipped = $(el[0].outerHTML);
@@ -129,12 +235,10 @@
       $('#front>svg').html($('#front>svg').html())
     };
 
-    var blockType = 'supraclavicular';
 
     var reloadSVG = function() {
       $('#front').html($('#front').html());
       $('#back').html($('#back').html());
-      $('#foot').html($('#foot').html());
       refreshEvents();
     };
 
@@ -162,7 +266,7 @@
 
           console.log(mainPt, flipPt)
 
-          var side = 'none';
+          var side = 'left';
           if (group == 'front') side = e.offsetX > middle ? 'right' : 'left';
           else if (group == 'back') side = e.offsetX > middle ? 'right' : 'left';
 
@@ -200,55 +304,257 @@
           reloadSVG();
         });
       });
-    }
+    };
+
+    var updateLayout = function() {
+      var width = $(document).innerWidth();
+      var panes = width > 1100 ? 'three' : width > 550 ? 'two' : 'one';
+      $('#mobileTop').toggle(panes == 'one');
+      $('#leftSide, #listCol, #notesCol, #bodyCol, #listIcon, #bodyTop, #notesTop').css('display', panes != 'one' ? 'inline-block' : 'none');
+      if (panes == 'three') { // Three Pane
+        $('#leftSide').css('width', '66%');
+        $('#listCol, #notesCol').css('width', '50%');
+        $('#bodyCol').css('width', '34%');
+        $('#leftSide, #listCol, #notesCol, #bodyCol').css('height', '100%')
+      } else if (panes == 'two') { // Two Pane
+        $('#leftSide, #bodyCol').css('width', '50%').css('height', '100%')
+        $('#listCol, #notesCol').css('width', '100%').css('height', '50%')
+      } else if (panes == 'one') { // One Pane
+        $('#listCol, #notesCol, #bodyCol').css('width', '100%');
+        $('#listCol, #notesCol').css('height', '100%')
+        $('#bodyCol').css('height', 'calc(100% - 60px)')
+        $('#leftSide').css('width', '100%').css('height', 'calc(100% - 70px)').toggle(pane != 'body');
+        $('#listCol').toggle(pane == 'list');
+        $('#notesCol').toggle(pane == 'notes');
+        $('#bodyCol').toggle(pane == 'body');
+      }
+      $('#front').parent().css('height', panes == 'one' ? '100%' : 'calc(100% - 55px)')
+    };
+    $(window).on('resize', function() {
+      updateLayout();
+    });
+    updateLayout();
 
     var refresh = function() {
       $('.flip').remove();
       alreadyShown = {};
 
-      $('#front, #back, #foot').find('#layer10, #layer9').children().each(function(i, n) {
+      $('#listTitle').text(({
+        'surgery': 'Blocks by Surgery',
+        'location': 'Blocks by Location',
+        'custom': 'Block Combinations',
+        'map': 'Blocks from Nerve Maps'
+      })[listType]);
+      $('.listOption').removeClass('active').unbind('click').click(function() {
+        listType = getProp(this, 'type');
+        dataList = [];
+        refresh();
+      });
+      $('.listOption[data-type="'+listType+'"]').addClass('active');
+      $('#surgerySection').toggle(listType == 'surgery');
+      $('#mapSection').toggle(listType == 'map');
+      $('#customBlockSection').toggle(listType == 'custom');
+
+      $('#back').toggle(bodySide == 'back');
+      $('#front').toggle(bodySide == 'front');
+      $('#flipBody').unbind('click').click(function() {
+        bodySide = bodySide == 'back' ? 'front' : 'back';
+        refresh();
+      });
+
+      $('.mobileTab').removeClass('btn-secondary').addClass('btn-light').unbind('click').click(function() {
+        pane = getProp(this, 'type');
+        refresh();
+        updateLayout();
+      });
+      $('.mobileTab[data-type="'+pane+'"]').addClass('btn-secondary').removeClass('btn-light')
+
+      $('#front, #back').find('#layer10, #layer9').children().each(function(i, n) {
         $(n).css('visibility', 'hidden');
       });
 
-      if (blockType == 'fullMap') {
-        $('#front, #back, #foot').find('#layer10, #layer9').children().each(function(i, n) {
-          $(n).css('visibility', '');
-          $(n).css('fill', 'grey');
-        });
-      } else if (blockType == 'dermatome') {
-        $('#front, #back, #foot').find('#layer10').children().each(function(i, n) {
-          $(n).css('visibility', '');
-          $(n).css('fill', 'grey');
-        });
-      } else if (blockType == 'cutaneous') {
-        $('#front, #back, #foot').find('#layer9').children().each(function(i, n) {
-          $(n).css('visibility', '');
-          $(n).css('fill', 'grey');
-        });
-      } else {
-        showBlock(nerveBlocks[blockType], 'left', { color: 'grey' });
-        showBlock(nerveBlocks[blockType], 'right', { color: 'grey' });
+      // if (dataList[selected] == null) selected = 0;
+      $('#dataList').empty();
+      dataList.map(function(item, i) {
+        var isSelected = i == selected;
+        if (item.type == 'surgery') {
+          var data = surgeries[item.name];
+          $('#dataList').append($(''+
+`<div class="dataRow" data-type="surgery" data-index="${i}" style="padding: 6px;background-color: #0e5da4;border-radius: 5px;margin: 5px;color: white; cursor: pointer;${isSelected ? 'border: black solid 2px;' : ''}">
+  <i class="fa-solid fa-magnifying-glass" style="float: right; margin-right: 5px; margin-top: 3px;"></i>
+  <i class="removeData fa-solid fa-xmark" style="margin-right: 7px; margin-left: 4px;"></i>
+  <span>Surgery: ${data.name}</span>
+</div>`));
+        } else if (item.type == 'block') {
+          $('#dataList').append($(''+
+`<div class="dataRow" data-type="block" data-index="${i}" style="padding: 6px;background-color: lightgrey;border-radius: 5px;margin: 5px;cursor: pointer;${isSelected ? 'border: #125da6 solid 2px;' : ''}">
+  <i class="fa-solid fa-arrow-right" style="float: right; margin-right: 5px; margin-top: 3px;"></i>
+  <i class="removeData fa-solid fa-xmark" style="margin-right: 7px; margin-left: 4px;"></i>
+  <span>${item.names.map(function(blockName) {
+    return blocks[blockName].name;
+  }).join(' + ')}</span>
+</div>`));
+        }
+      });
+      
+      $('.dataRow').unbind('click').click(function() {
+        var index = getProp(this, 'index');
+        if (index == selected) selected = null;
+        else selected = index;
+        refresh();
+      });
+
+      $('.removeData').unbind('click').click(function(e) {
+        e.stopPropagation();
+        var index = parseInt(getProp(this, 'index'));
+        dataList.splice(index, 1);
+        selected = null;
+        refresh();
+      });
+
+      var notes = '<h6>Pick a block or surgery to see notes related to it.</h6>';
+      if (dataList[selected] != null) {
+        var item = dataList[selected];
+        if (item.type == 'surgery') {
+          var data = surgeries[item.name];
+          notes = '<h5>'+data.name+'</h5><p>'+data.notes+'</p>';
+        } else if (item.type == 'block') {
+          notes = item.names.map(function(blockName) {
+            var data = blocks[blockName];
+            return '<h5>'+data.name+'</h5><p>'+((data.notes || '').trim().length == 0 ? 'No notes yet' : data.notes)+'</p>';
+          }).join('');
+        }
+      }
+      $('#blockNotes').html(notes);
+
+      var backgroundBlocks = {};
+      var selectedBlocks = {};
+
+      dataList.map(function(item, i) {
+        if (item.type != 'block') return;
+        var isSelected = i == selected;
+        if (isSelected) {
+          item.names.map(function(blockName) {
+            selectedBlocks[blockName] = true;
+          })
+        } else if (listType == 'custom') {
+          item.names.map(function(blockName) {
+            backgroundBlocks[blockName] = true;
+          });
+        }
+      });
+
+      $('#front, #back').find('#layer10, #layer9').children().each(function(i, n) {
+        $(n).css('visibility', 'hidden');
+        $(n).css('fill', 'grey');
+      });
+
+      for (var blockName in backgroundBlocks) {
+        showBlock(blocks[blockName].coverage, 'left', { color: 'grey' });
+        showBlock(blocks[blockName].coverage, 'right', { color: 'grey' });
+      }
+      for (var blockName in selectedBlocks) {
+        showBlock(blocks[blockName].coverage, 'left', { color: '#055da0' });
+        showBlock(blocks[blockName].coverage, 'right', { color: '#055da0' });
       }
 
+      // if (blockType == 'fullMap') {
+      //   $('#front, #back').find('#layer10, #layer9').children().each(function(i, n) {
+      //     $(n).css('visibility', '');
+      //     $(n).css('fill', 'grey');
+      //   });
+      // } else if (blockType == 'dermatome') {
+      //   $('#front, #back').find('#layer10').children().each(function(i, n) {
+      //     $(n).css('visibility', '');
+      //     $(n).css('fill', 'grey');
+      //   });
+      // } else if (blockType == 'cutaneous') {
+      //   $('#front, #back').find('#layer9').children().each(function(i, n) {
+      //     $(n).css('visibility', '');
+      //     $(n).css('fill', 'grey');
+      //   });
+      // } else {
+      //   showBlock(blocks[blockType].coverage, 'left', { color: 'grey' });
+      //   showBlock(blocks[blockType].coverage, 'right', { color: 'grey' });
+      // }
 
       // showBlock(['back,path15628'], 'left');
       // showBlock(['back,path15628'], 'right', { color: 'grey' });
 
+      blockSearchBox.list = _.toPairs(blocks).map(function(pair) {
+        return { name: pair[0], label: pair[1].name };
+      });
+
+      surgerySearchBox.list = _.toPairs(surgeries).map(function(pair) {
+        return { name: pair[0], label: pair[1].name };
+      });
+
       reloadSVG();
     };
 
+    var surgerySearchBox = null;
+    var blockSearchBox = null;
+
     $(function() {
-      $('#front, #back, #foot').find('#layer10, #layer9').show().children().each(function(i, n) {
+      $('#front, #back').find('#layer10, #layer9').show().children().each(function(i, n) {
         $(n).css('visibility', '');
         $(n).css('fill', 'grey');
       });
 
-      refresh();
-
-      $('#selectBlock').unbind('change').on('change', function() {
-        blockType = $(this).val();
+      $('#clear').click(function() {
+        dataList = [];
         refresh();
-      })
+      });
+
+      var addToList = function(item) {
+        if (dataList.every(function(other) {
+          return !(other.type == item.type && other.name == item.name && (other.names || []).join(',') == (item.names || []).join(','));
+        })) dataList.push(item);
+      }
+
+      surgerySearchBox = new Awesomplete($('#surgerySearch')[0], {
+        list: [], minChars: 0, autoFirst: true, maxItems: 8,
+        data: function(item) {
+          return { label: item.label, value: item };
+        }
+      });
+      surgerySearchBox.container.addEventListener("awesomplete-selectcomplete", function(data) {
+        $('#surgerySearch').val('');
+        var value = data.text.value;
+        var data = surgeries[value.name];
+        
+        if (selected == null) selected = dataList.length;
+        addToList({  type: 'surgery', name: value.name  });
+        data.blocks.map(function(blockNames) {
+          addToList({
+            type: 'block',
+            names: blockNames
+          });
+        });
+
+        refresh();
+      });
+
+      blockSearchBox = new Awesomplete($('#blockSearch')[0], {
+        list: [], minChars: 0, autoFirst: true, maxItems: 8,
+        data: function(item) {
+          return { label: item.label, value: item };
+        }
+      });
+      blockSearchBox.container.addEventListener("awesomplete-selectcomplete", function(data) {
+        $('#blockSearch').val('');
+        var value = data.text.value;
+        var data = blocks[value.name];
+
+        addToList({ type: 'block', names: [value.name] });
+
+        refresh();
+      });
+
+      $('#surgerySearch, #blockSearch').parent().css('width', 'calc(100% - 10px)');
+      $('#surgerySearch, #blockSearch').parent().find('ul').css('margin-left', '5px');
+
+      refresh();
     });
   </script>
 </body>

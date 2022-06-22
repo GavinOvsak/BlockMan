@@ -87,7 +87,7 @@
         <div id="blockNotes" style="width: 100%;display: inline-block;padding: 10px;overflow-y: scroll;"></div>
       </div>
     </div><div id="bodyCol" style="width: 34%; display: none; vertical-align: top;"> 
-      <div id="bodyTop" style="width: 100%;background-color: lightgrey;padding: 10px;">
+      <div id="bodyTop" style="width: 100%;background-color: lightgrey;padding: 10px; cursor: pointer;">
         <i class="fa-solid fa-child-reaching" style="margin-right: 10px;width: 14px; display: inline-block"></i>Body Map
       </div>
       <div style="width: calc(100% - 10px);position: relative;display: inline-block;border: black 1px solid;border-radius: 10px;padding: 5px;height: calc(100% - 55px);margin-top: 5px;margin-left: 5px;">
@@ -462,26 +462,10 @@
         showBlock(blocks[blockName].coverage, 'right', { color: '#055da0' });
       }
 
-      // if (blockType == 'fullMap') {
-      //   $('#front, #back').find('#layer10, #layer9').children().each(function(i, n) {
-      //     $(n).css('visibility', '');
-      //     $(n).css('fill', 'grey');
-      //   });
-      // } else if (blockType == 'dermatome') {
-      //   $('#front, #back').find('#layer10').children().each(function(i, n) {
-      //     $(n).css('visibility', '');
-      //     $(n).css('fill', 'grey');
-      //   });
-      // } else if (blockType == 'cutaneous') {
-      //   $('#front, #back').find('#layer9').children().each(function(i, n) {
-      //     $(n).css('visibility', '');
-      //     $(n).css('fill', 'grey');
-      //   });
-      // } else {
-      //   showBlock(blocks[blockType].coverage, 'left', { color: 'grey' });
-      //   showBlock(blocks[blockType].coverage, 'right', { color: 'grey' });
-      // }
-
+      // $('#front, #back').find('#layer10, #layer9').children().each(function(i, n) {
+      //   $(n).css('visibility', '');
+      //   $(n).css('fill', 'grey');
+      // });
       // showBlock(['back,path15628'], 'left');
       // showBlock(['back,path15628'], 'right', { color: 'grey' });
 
@@ -504,6 +488,14 @@
         $(n).css('visibility', '');
         $(n).css('fill', 'grey');
       });
+
+      $('#bodyTop').click(function() {
+        $('.flip').remove();
+        $('#front, #back').find('#layer10, #layer9').children().each(function(i, n) {
+          $(n).css('visibility', '');
+          $(n).css('fill', '#055da0');
+        });
+      })
 
       $('#clear').click(function() {
         dataList = [];

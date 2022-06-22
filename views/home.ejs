@@ -113,6 +113,7 @@
   <script>
 
     var pane = 'body'; // body, notes, list
+    var panes = 'three';
     var bodySide = 'front'; // front, back
     var listType = 'custom'; // surgery, location, custom, map
 
@@ -309,35 +310,8 @@
       });
     };
 
-    var updateLayout = function() {
-      var width = $(document).innerWidth();
-      var panes = width > 1100 ? 'three' : width > 615 ? 'two' : 'one';
-      $('#mobileTop').toggle(panes == 'one');
-      $('#leftSide, #listCol, #notesCol, #bodyCol, #listIcon, #bodyTop, #notesTop').css('display', panes != 'one' ? 'inline-block' : 'none');
-      if (panes == 'three') { // Three Pane
-        $('#leftSide').css('width', '66%');
-        $('#listCol, #notesCol').css('width', '50%');
-        $('#bodyCol').css('width', '34%');
-        $('#leftSide, #listCol, #notesCol, #bodyCol').css('height', '100%')
-      } else if (panes == 'two') { // Two Pane
-        $('#leftSide, #bodyCol').css('width', '50%').css('height', '100%')
-        $('#listCol, #notesCol').css('width', '100%').css('height', '50%')
-      } else if (panes == 'one') { // One Pane
-        $('#listCol, #notesCol, #bodyCol').css('width', '100%');
-        $('#listCol, #notesCol').css('height', '100%')
-        $('#bodyCol').css('height', 'calc(100% - 60px)')
-        $('#leftSide').css('width', '100%').css('height', 'calc(100% - 70px)').toggle(pane != 'body');
-        $('#listCol').toggle(pane == 'list');
-        $('#notesCol').toggle(pane == 'notes');
-        $('#bodyCol').toggle(pane == 'body');
-      }
-      $('#blockNotes').css('height', panes == 'one' ? '100%' : 'calc(100% - 44px)')
-      $('#bodyMain').css('height', panes == 'one' ? '100%' : 'calc(100% - 55px)')
-    };
-    $(window).on('resize', function() {
-      updateLayout();
-    });
-    updateLayout();
+    var surgerySearchBox = null;
+    var blockSearchBox = null;
 
     var refresh = function() {
       $('.flip').remove();
@@ -386,15 +360,20 @@
         if (item.type == 'surgery') {
           var data = surgeries[item.name];
           $('#dataList').append($(''+
-`<div class="dataRow" data-type="surgery" data-index="${i}" style="user-select: text; padding: 6px;background-color: #0e5da4;border-radius: 5px;margin: 5px;color: white; cursor: pointer;${isSelected ? 'border: black solid 2px;' : ''}">
-  <i class="fa-solid fa-magnifying-glass" style="float: right; margin-right: 5px; margin-top: 3px;"></i>
+`<div class="dataRow" data-type="surgery" data-index="${i}" style="user-select: text; padding: 6px;background-color: #0e5da4;border-radius: 5px;margin: 5px;color: white; cursor: pointer;border: ${isSelected ? 'black' : 'white'} solid 2px;">
+  ${panes == 'one' ? ''+
+  `<i class="fa-solid fa-file-lines notesJump" style="float: right;margin-right: 5px;margin-top: 3px;width: 25px;text-align: center;"></i>` : 
+  `<i class="fa-solid fa-magnifying-glass" style="float: right; margin-right: 5px; margin-top: 3px;"></i>` }
   <i class="removeData fa-solid fa-xmark" style="margin-right: 7px; margin-left: 4px;"></i>
   <span>Surgery: ${data.name}</span>
 </div>`));
         } else if (item.type == 'block') {
           $('#dataList').append($(''+
-`<div class="dataRow" data-type="block" data-index="${i}" style="user-select: text; padding: 6px;background-color: lightgrey;border-radius: 5px;margin: 5px;cursor: pointer;${isSelected ? 'border: #125da6 solid 2px;' : ''}">
-  <i class="fa-solid fa-arrow-right" style="float: right; margin-right: 5px; margin-top: 3px;"></i>
+`<div class="dataRow" data-type="block" data-index="${i}" style="user-select: text; padding: 6px;background-color: lightgrey;border-radius: 5px;margin: 5px;cursor: pointer;border: ${isSelected ? '#125da6' : 'white'} solid 2px;">
+  ${panes == 'one' ? ''+
+  `<i class="fa-solid fa-child-reaching bodyJump" style="float: right;margin-right: 5px;margin-top: 3px;width: 25px;text-align: center;"></i>
+   <i class="fa-solid fa-file-lines notesJump" style="float: right;margin-right: 5px;margin-top: 3px;width: 25px;text-align: center;"></i>` : 
+  `<i class="fa-solid fa-arrow-right" style="float: right; margin-right: 5px; margin-top: 3px;"></i>` }
   <i class="removeData fa-solid fa-xmark" style="margin-right: 7px; margin-left: 4px;"></i>
   <span>${item.names.map(function(blockName) {
     return blocks[blockName].name;
@@ -415,6 +394,24 @@
         var index = parseInt(getProp(this, 'index'));
         dataList.splice(index, 1);
         selected = null;
+        refresh();
+      });
+
+      $('.notesJump').unbind('click').click(function(e) {
+        e.stopPropagation();
+        var index = parseInt(getProp(this, 'index'));
+        selected = index;
+        pane = 'notes';
+        updateLayout();
+        refresh();
+      });
+
+      $('.bodyJump').unbind('click').click(function(e) {
+        e.stopPropagation();
+        var index = parseInt(getProp(this, 'index'));
+        selected = index;
+        pane = 'body';
+        updateLayout();
         refresh();
       });
 
@@ -471,19 +468,52 @@
       // showBlock(['back,path15628'], 'left');
       // showBlock(['back,path15628'], 'right', { color: 'grey' });
 
-      blockSearchBox.list = _.toPairs(blocks).map(function(pair) {
-        return { name: pair[0], label: pair[1].name };
-      });
+      if (blockSearchBox != null) {
+        blockSearchBox.list = _.toPairs(blocks).map(function(pair) {
+          return { name: pair[0], label: pair[1].name };
+        });
+      }
 
-      surgerySearchBox.list = _.toPairs(surgeries).map(function(pair) {
-        return { name: pair[0], label: pair[1].name };
-      });
+      if (surgerySearchBox != null) {
+        surgerySearchBox.list = _.toPairs(surgeries).map(function(pair) {
+          return { name: pair[0], label: pair[1].name };
+        });
+      }
 
       reloadSVG();
     };
 
-    var surgerySearchBox = null;
-    var blockSearchBox = null;
+    var updateLayout = function() {
+      var width = $(document).innerWidth();
+      var oldPanes = panes;
+      panes = width > 1100 ? 'three' : width > 615 ? 'two' : 'one';
+      if (panes != oldPanes) refresh();
+      $('#mobileTop').toggle(panes == 'one');
+      $('#leftSide, #listCol, #notesCol, #bodyCol, #listIcon, #bodyTop, #notesTop').css('display', panes != 'one' ? 'inline-block' : 'none');
+      if (panes == 'three') { // Three Pane
+        $('#leftSide').css('width', '66%');
+        $('#listCol, #notesCol').css('width', '50%');
+        $('#bodyCol').css('width', '34%');
+        $('#leftSide, #listCol, #notesCol, #bodyCol').css('height', '100%')
+      } else if (panes == 'two') { // Two Pane
+        $('#leftSide, #bodyCol').css('width', '50%').css('height', '100%')
+        $('#listCol, #notesCol').css('width', '100%').css('height', '50%')
+      } else if (panes == 'one') { // One Pane
+        $('#listCol, #notesCol, #bodyCol').css('width', '100%');
+        $('#listCol, #notesCol').css('height', '100%')
+        $('#bodyCol').css('height', 'calc(100% - 60px)')
+        $('#leftSide').css('width', '100%').css('height', 'calc(100% - 70px)').toggle(pane != 'body');
+        $('#listCol').toggle(pane == 'list');
+        $('#notesCol').toggle(pane == 'notes');
+        $('#bodyCol').toggle(pane == 'body');
+      }
+      $('#blockNotes').css('height', panes == 'one' ? '100%' : 'calc(100% - 44px)')
+      $('#bodyMain').css('height', panes == 'one' ? '100%' : 'calc(100% - 55px)')
+    };
+    $(window).on('resize', function() {
+      updateLayout();
+    });
+    updateLayout();
 
     $(function() {
       $('#front, #back').find('#layer10, #layer9').show().children().each(function(i, n) {

@@ -154,39 +154,52 @@
     }];
 
     var namedSections = {
-      'f_C4lat': 'front,path2797',
-      'f_C4med': 'front,path2758',
-      'f_C5': 'front,path14887',
-      'f_C6': 'front,path2389',
-      'f_C7': 'front,path1747',
-      'f_C8': 'front,path1708',
-      'f_T1': 'front,path14848',
-      'f_T2': 'front,path14653',
+      'f_radSup': 'front,path6027',
+      'f_med': 'front,path5988',
+      'f_ulnar': 'front,path5949',
+      'f_msc': 'front,path5596',
+      'f_radInfLat': 'front,path5557',
+      'f_medAbc': 'front,path5518',
+      'f_bracCut': 'front,path5479',
+      'f_icb': 'front,path5440',
+      'f_aslp': 'front,path5401',
+      'f_supClav': 'front,path5362',
 
-      'f_Med': 'front,path2395',
-      'f_Msk': 'front,path2900',
-      'f_TriGA': 'front,path13562',
-      'f_TriOpth': 'front,path13523',
-      'f_TriMax': 'front,path13484',
-      'f_TriMand': 'front,path13445',
-      'f_CPsuper': 'front,path13406',
-      'f_Ax': 'front,path13367',
-      'f_Icb': 'front,path13328',
-      'f_RadPost': 'front,path13289',
-      'f_RadSup': 'front,path13211',
-      'f_LatCut': 'front,path13133',
-      'f_Saph': 'front,path13094',
+      'f_Vcran': 'front,path15082',
+      'f_C2': 'front,path15121',
+      'f_C3': 'front,path3033',
+      'f_C4med2': 'front,path15932',
+      'f_C4med': 'front,path16010',
+      'f_C4lat': 'front,path15971',
+      'f_C5': 'front,path15854',
+      'f_C6': 'front,path15815',
+      'f_C7': 'front,path15076',
+      'f_C8': 'front,path15737',
+      'f_T1': 'front,path15776',
+      'f_T2': 'front,path15893',
 
-      'b_C4': 'back,path15160',
-      'b_C5': 'back,path15316',
-      'b_C6': 'back,path15745',
-      'b_C7': 'back,path16016',
-      'b_C8': 'back,path15977',
-      'b_T1': 'back,path15706',
-      'b_T2': 'back,path15355',
-      'b_T3': 'back,path15394'
+      'b_medAbc': 'back,path10344',
+      'b_latAbc': 'back,path10305',
+      'b_ulnar': 'back,path10305',
+      'b_med1': 'back,path10227',
+      'b_med2': 'back,path10188',
+      'b_med3': 'back,path10149',
+      'b_med4': 'back,path2281-4-8',
+      'b_radSup': 'back,path10071',
+      'b_bracCut': 'back,path10383',
+      'b_icb': 'back,path10422',
+      'b_aslp': 'back,path10500',
+      'b_supClav': 'back,path17713',
 
-
+      'b_T2': 'back,path5476',
+      'b_T1': 'back,path5358',
+      'b_C8': 'back,path5280',
+      'b_C7': 'back,path5319',
+      'b_C6': 'back,path5241',
+      'b_C5': 'back,path5515',
+      'b_C4': 'back,path3160',
+      'b_C3': 'back,path3236'
+      
     };
 
     var blocks = {
@@ -218,17 +231,22 @@
       'radial': {
         name: 'Radial Block',
         notes: '',
-        coverage: [ 'f_C6', 'f_C7', 'f_C8', 'b_C6', 'b_C7', 'b_C8' ]
+        coverage: [ 'f_radSup', 'f_radInfLat', 'b_radSup' ]
       },
       'ulnar': {
         name: 'Ulnar Block',
         notes: '',
-        coverage: [ 'f_C6', 'f_C7', 'f_C8', 'b_C6', 'b_C7', 'b_C8' ]
+        coverage: [ 'b_ulnar', 'f_ulnar' ]
       },
       'median': {
         name: 'Median Block',
         notes: '',
-        coverage: [ 'f_C6', 'f_C7', 'f_C8', 'b_C6', 'b_C7', 'b_C8' ]
+        coverage: [ 'f_med', 'b_med1', 'b_med2', 'b_med3', 'b_med4' ]
+      },
+      'intercostobracial': {
+        name: 'Intercostobrachial Block',
+        notes: '',
+        coverage: [ 'f_icb', 'b_icb' ]
       }
     };
 
@@ -361,6 +379,7 @@
           for (var name in contains) {
             if (!!alreadyShown[name + ':' + contains[name]]) continue;
             alreadyShown[name + ':' + contains[name]] = true;
+            console.log('painting', name);
             showBlock([name], contains[name]);
             break;
           }

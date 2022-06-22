@@ -127,6 +127,28 @@
       </div>
     </div>
   </div>
+
+  <div id="bodyModal" data-backdrop="static" data-keyboard="false" class="modal fade" role="dialog" style="overflow: hidden">
+    <div class="modal-dialog modal-lg" style="overflow-y: initial !important;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 style="display: inline-block; margin-bottom: 0px; margin-top: 0px; width: calc(100% - 20px);">Full Body Map</h4>
+          <span id="editTextModalClose" data-dismiss="modal" class="fa-solid fa-down-left-and-up-right-to-center" style="cursor: pointer;float: right;font-size: 20px;margin-top: 4px;"></span>
+        </div>
+        <div class="modal-body" style="text-align: center; display: inline-block; padding-top: 15px; width: 100%; overflow-y: scroll; max-height: 624px;">
+          <div id="expandedBox">
+            <div id="fullFront" style="display: inline-block;height: 700px;">
+              <%- include ("../res/svg/bodymapFront.svg") %>
+            </div>
+            <div id="fullBack" style="display: inline-block;height: 700px;">
+              <%- include ("../res/svg/bodymapBack2.svg") %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
 
     var state = {
@@ -250,22 +272,19 @@
       }
     };
 
-    var surgeries = {
-      's1': {
-        name: 'Clavicle Fracture',
-        notes: '',
-        blocks: [
-          ['scp', 'isb']
-        ]
-      },
-      's2': {
-        name: 'Total or Partial Shoulder',
-        notes: '',
-        blocks: [
-          ['isb']
-        ]
-      },
-    }
+    var surgeries = [{
+      name: 'Clavicle Fracture',
+      notes: '',
+      blocks: [
+        ['scp', 'isb']
+      ]
+    }, {
+      name: 'Total or Partial Shoulder',
+      notes: '',
+      blocks: [
+        ['isb']
+      ]
+    }];
 
     var middle = 500;
     var flip = {
@@ -283,43 +302,58 @@
       return $(that).closest('[data-'+prop+']').attr('data-'+prop);
     };
 
+    var setMaxHeight = function(element) {
+      var headerBox = $(element+' .modal-header').length != 0 ? $(element+' .modal-header')[0].getBoundingClientRect() : {height: 0, top: 0};
+      var footerBox = $(element+' .modal-footer').length != 0 ? $(element+' .modal-footer')[0].getBoundingClientRect() : {height: 20};
+      var maxHeight = $(element+'').height() - (Math.max(headerBox.top, 10) + headerBox.height + footerBox.height + 20);
+      $(element+' .modal-body').css('max-height', maxHeight);
+    };
+
     var showBlock = function(list, side, opts) {
       opts = opts || {};
       var fill = opts.color == null ? 'green' : opts.color;
 
       list.map(function(name) {
         var hash = namedSections[name] != null ? namedSections[name] : name;
-        var group = hash.split(',')[0];
+        var mainGroup = hash.split(',')[0];
         var id = hash.split(',')[1];
-        var el = $('#' + group).find('#' + id);
-        var parent = el.parent().attr('id');
-        var originalSide = defaultSides[group+','+parent];
-        
-        if (el.length == 0) {
-          console.log(id, 'no longer exists')
-          return;
-        }
 
-        if (originalSide == side) {
-          el.css('visibility', '').css('fill', fill);
-        } else {
-          var flipped = $(el[0].outerHTML);
-          flipped.attr('id', 'flip_' + id);
-          flipped.css('visibility', '').css('fill', fill);
+        ({'front': ['front', 'fullFront'],
+          'back': ['back', 'fullBack']
+        })[mainGroup].map(function(group) {
+          var el = $('#' + group).find('#' + id);
+          var parent = el.parent().attr('id');
+          var originalSide = defaultSides[mainGroup+','+parent];
+          
+          if (el.length == 0) {
+            console.log(id, 'no longer exists')
+            return;
+          }
 
-          var newParent = $('<g class="flip">'); //  transform="scale (-1, 1)" transform-origin="800px, 0px"
-          newParent.append(flipped);
-          newParent.css('transform-origin', flip[group] + 'px 0px').css('transform', 'scale(-1, 1)')
-          $('#' + group).find('#' + parent).append(newParent);
-        }
+          if (originalSide == side) {
+            el.css('visibility', '').css('fill', fill);
+          } else {
+            var flipped = $(el[0].outerHTML);
+            flipped.attr('id', 'flip_' + id);
+            flipped.css('visibility', '').css('fill', fill);
+
+            var newParent = $('<g class="flip">'); //  transform="scale (-1, 1)" transform-origin="800px, 0px"
+            newParent.append(flipped);
+            newParent.css('transform-origin', flip[mainGroup] + 'px 0px').css('transform', 'scale(-1, 1)')
+            $('#' + group).find('#' + parent).append(newParent);
+          }
+        });
       });
 
-      $('#front>svg').html($('#front>svg').html())
+      // reloadSVG();
+      // $('#front>svg').html($('#front>svg').html())
     };
 
     var reloadSVG = function() {
       $('#front').html($('#front').html());
+      $('#fullFront').html($('#fullFront').html());
       $('#back').html($('#back').html());
+      $('#fullBack').html($('#fullBack').html());
       refreshEvents();
     };
 
@@ -445,6 +479,14 @@
         refresh();
       });
 
+      $('#expandBody').unbind('click').click(function() {
+        $('#bodyModal').modal({ backdrop: 'static', keyboard: false, show: true });
+        setTimeout(function() {
+          setMaxHeight('#bodyModal');
+          updateLayout();
+        }, 200);
+      });
+
       $('.mobileTab').removeClass('btn-secondary').addClass('btn-light').unbind('click').click(function() {
         state.pane = getProp(this, 'type');
         saveState();
@@ -453,7 +495,7 @@
       });
       $('.mobileTab[data-type="'+state.pane+'"]').addClass('btn-secondary').removeClass('btn-light')
 
-      $('#front, #back').find('#layer10, #layer9').children().each(function(i, n) {
+      $('#front, #back, #fullFront, #fullBack').find('#layer10, #layer9').children().each(function(i, n) {
         $(n).css('visibility', 'hidden');
       });
 
@@ -567,7 +609,7 @@
         }
       });
 
-      $('#front, #back').find('#layer10, #layer9').children().each(function(i, n) {
+      $('#front, #back, #fullFront, #fullBack').find('#layer10, #layer9').children().each(function(i, n) {
         $(n).css('visibility', 'hidden');
         $(n).css('fill', 'grey');
       });
@@ -609,8 +651,8 @@
       }
 
       if (surgerySearchBox != null) {
-        surgerySearchBox.list = _.toPairs(surgeries).map(function(pair) {
-          return { name: pair[0], label: pair[1].name };
+        surgerySearchBox.list = surgeries.map(function(data, surgery_i) {
+          return { name: surgery_i, label: data.name };
         });
       }
 
@@ -641,23 +683,31 @@
         $('#notesCol').toggle(state.pane == 'notes');
         $('#bodyCol').toggle(state.pane == 'body');
       }
-      $('#blockNotes').css('height', panes == 'one' ? '100%' : 'calc(100% - 44px)')
-      $('#bodyMain').css('height', panes == 'one' ? '100%' : 'calc(100% - 55px)')
+      $('#blockNotes').css('height', panes == 'one' ? '100%' : 'calc(100% - 44px)');
+      $('#bodyMain').css('height', panes == 'one' ? '100%' : 'calc(100% - 55px)');
+
+      if ($('#bodyModal').is(':visible')) {
+        var modalWidth = $('#bodyModal').find('.modal-body').innerWidth();
+        var modalHeight = $(window).innerHeight() - 170;
+        $('#fullFront').css('width', (modalWidth - 50) / 2).css('height', modalHeight);
+        $('#fullBack').css('width', (modalWidth - 50) / 2).css('height', modalHeight);
+      }
     };
     $(window).on('resize', function() {
       updateLayout();
+      setMaxHeight('#bodyModal');
     });
     updateLayout();
 
     $(function() {
-      $('#front, #back').find('#layer10, #layer9').show().children().each(function(i, n) {
+      $('#front, #back, #fullFront, #fullBack').find('#layer10, #layer9').show().children().each(function(i, n) {
         $(n).css('visibility', '');
         $(n).css('fill', 'grey');
       });
 
       $('#bodyTop').click(function() {
         $('.flip').remove();
-        $('#front, #back').find('#layer10, #layer9').children().each(function(i, n) {
+        $('#front, #back, #fullFront, #fullBack').find('#layer10, #layer9').children().each(function(i, n) {
           $(n).css('visibility', '');
           $(n).css('fill', '#055da0');
         });
@@ -672,7 +722,7 @@
         if (dataList.every(function(other) {
           return !(other.type == item.type && other.name == item.name && (other.names || []).join(',') == (item.names || []).join(','));
         })) dataList.push(item);
-      }
+      };
 
       $('.mapSpot').unbind('click').click(function() {
         var block = getProp(this, 'block');
@@ -680,6 +730,7 @@
         else mapClickBlock = block;
         refresh();
       });
+
       $('.mapSpot').mouseenter(function() {
         var block = getProp(this, 'block');
         mapHoverBlock = block;

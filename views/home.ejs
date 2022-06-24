@@ -415,7 +415,9 @@
             if (flipPt != null) checkPt(flipPt);
           });
 
-          if (state.listType == 'location') {
+          state.listType = 'location';
+
+          // if (state.listType == 'location') {
             $('.locPt').remove();
             var actualPt = mainPt.matrixTransform(svg.getScreenCTM().inverse());
             $('#'+group + '> svg').append($('<circle stroke="black" fill="yellow" class="locPt" cx="'+actualPt.x+'" cy="'+actualPt.y+'" r="3"/>'))
@@ -432,7 +434,7 @@
               }
             }
             if (dataList.length > 0) selected = 0;
-          }
+          // }
 
           // console.log('all contains', contains);
           // for (var name in contains) {

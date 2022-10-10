@@ -809,13 +809,18 @@
         url: './res/svg/bodymapFront.svg',
         type: "GET",
         contentType: "text/plain",
-        success: function(a, b, dat1) {
+        success: function(a, b, data1) {
           $('#fullFront').html(data1.responseText);
           debugger;
-          $.get('./res/svg/bodymapBack2.svg', function(a, b, data2) {
-            debugger;
-            $('#fullBack').html(data2.responseText);
-            refresh();
+          $.ajax({
+            url: './res/svg/bodymapBack2.svg',
+            type: "GET",
+            contentType: "text/plain",
+            success: function(a, b, data2) {
+              debugger;
+              $('#fullBack').html(data2.responseText);
+              refresh();
+            }
           });
         }
       });

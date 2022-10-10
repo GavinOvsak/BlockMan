@@ -143,10 +143,10 @@
               <i data-toggle="tooltip" title="" data-placement="left" class="muscleBody fa-solid fa-dumbbell" style="display: inline-block;font-size: 20px;padding: 12px;cursor: pointer;width: 44px;" data-original-title="Muscle Layer"></i>
             </div>
             <div id="fullFront" style="display: inline-block;height: 700px;">
-              <%- include ("./res/svg/bodymapFront.svg") %>
+              <!-- <%- include ("./res/svg/bodymapFront.svg") %> -->
             </div>
             <div id="fullBack" style="display: inline-block;height: 700px;">
-              <%- include ("./res/svg/bodymapBack2.svg") %>
+              <!-- <%- include ("./res/svg/bodymapBack2.svg") %> -->
             </div>
           </div>
         </div>
@@ -809,10 +809,12 @@
         url: './res/svg/bodymapFront.svg',
         type: "GET",
         contentType: "text/plain",
-        success: function(data) {
+        success: function(a, b, dat1) {
+          $('#fullFront').html(data1.responseText);
           debugger;
-          $.get('./res/svg/bodymapBack2.svg', function(data) {
+          $.get('./res/svg/bodymapBack2.svg', function(a, b, data2) {
             debugger;
+            $('#fullBack').html(data2.responseText);
             refresh();
           });
         }

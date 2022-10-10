@@ -805,12 +805,17 @@
       $('#surgerySearch, #blockSearch').parent().css('width', 'calc(100% - 10px)');
       $('#surgerySearch, #blockSearch').parent().find('ul').css('margin-left', '5px');
 
-      $.get('./res/svg/bodymapFront.svg', function(data) {
-        debugger;
-        $.get('./res/svg/bodymapBack2.svg', function(data) {
+      $.get({
+        url: './res/svg/bodymapFront.svg',
+        type: "GET",
+        contentType: "text/plain",
+        success: function(data) {
           debugger;
-          refresh();
-        });
+          $.get('./res/svg/bodymapBack2.svg', function(data) {
+            debugger;
+            refresh();
+          });
+        }
       });
     });
   </script>

@@ -805,7 +805,13 @@
       $('#surgerySearch, #blockSearch').parent().css('width', 'calc(100% - 10px)');
       $('#surgerySearch, #blockSearch').parent().find('ul').css('margin-left', '5px');
 
-      refresh();
+      $.get('./res/svg/bodymapFront.svg', function(data) {
+        debugger;
+        $.get('./res/svg/bodymapBack2.svg', function(data) {
+          debugger;
+          refresh();
+        });
+      });
     });
   </script>
 </body>

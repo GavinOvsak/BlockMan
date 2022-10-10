@@ -805,7 +805,7 @@
       $('#surgerySearch, #blockSearch').parent().css('width', 'calc(100% - 10px)');
       $('#surgerySearch, #blockSearch').parent().find('ul').css('margin-left', '5px');
 
-      $.get({
+      $.ajax({
         url: './res/svg/bodymapFront.svg',
         type: "GET",
         contentType: "text/plain",

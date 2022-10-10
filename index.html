@@ -119,10 +119,10 @@
         </div>
         <!-- <i class="fa-solid fa-circle-dot" style="position: absolute; left: 65%; top: 20%; color: black;"></i> -->
         <div id="front" style="display: inline-block; width: 100%; height: 100%;">
-          <%- include ("./res/svg/bodymapFront.svg") %>
+          <!-- <%- include ("./res/svg/bodymapFront.svg") %> -->
         </div>
         <div id="back" style="display: none; width: 100%; height: 100%;">
-          <%- include ("./res/svg/bodymapBack2.svg") %>
+          <!-- <%- include ("./res/svg/bodymapBack2.svg") %> -->
         </div>
       </div>
     </div>
@@ -810,7 +810,7 @@
         type: "GET",
         contentType: "text/plain",
         success: function(a, b, data1) {
-          $('#fullFront').html(data1.responseText);
+          $('#fullFront, #front').html(data1.responseText);
           debugger;
           $.ajax({
             url: './res/svg/bodymapBack2.svg',
@@ -818,7 +818,7 @@
             contentType: "text/plain",
             success: function(a, b, data2) {
               debugger;
-              $('#fullBack').html(data2.responseText);
+              $('#fullBack, #back').html(data2.responseText);
               refresh();
             }
           });

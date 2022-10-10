@@ -718,11 +718,6 @@
     updateLayout();
 
     $(function() {
-      $('#front, #back, #fullFront, #fullBack').find('#layer10, #layer9').show().children().each(function(i, n) {
-        $(n).css('visibility', '');
-        $(n).css('fill', 'grey');
-      });
-
       $('#bodyTop').click(function() {
         $('.flip').remove();
         $('#front, #back, #fullFront, #fullBack').find('#layer10, #layer9').children().each(function(i, n) {
@@ -811,14 +806,17 @@
         contentType: "text/plain",
         success: function(a, b, data1) {
           $('#fullFront, #front').html(data1.responseText);
-          debugger;
           $.ajax({
             url: './res/svg/bodymapBack2.svg',
             type: "GET",
             contentType: "text/plain",
             success: function(a, b, data2) {
-              debugger;
               $('#fullBack, #back').html(data2.responseText);
+
+              $('#front, #back, #fullFront, #fullBack').find('#layer10, #layer9').show().children().each(function(i, n) {
+                $(n).css('visibility', '');
+                $(n).css('fill', 'grey');
+              });
               refresh();
             }
           });
